@@ -1,0 +1,32 @@
+{{ ansible_managed | comment }}
+
+[sssd]
+domains = {{ auth_sssd_domain }}
+config_file_version = 2
+services = nss, pam
+debug_level = 5
+
+[nss]
+filter_users = root
+
+[domain/{{ auth_sssd_domain }}]
+ad_domain = {{ auth_sssd_domain }}
+krb5_realm = {{ auth_sssd_domain|upper }}
+cache_credentials = True
+id_provider = ad
+krb5_store_password_if_offline = True
+default_shell = /bin/bash
+ldap_id_mapping = False
+use_fully_qualified_names = False
+fallback_homedir = /home/%u
+access_provider = ad
+
+enumerate = False
+ldap_user_principal = nosuchattribute
+dyndns_update = False
+ldap_force_upper_case_realm = True
+auth_provider = ad
+ldap_schema = ad
+ad_gpo_access_control = {{ ad_gpo_access_control }}
+
+#debug_level = 9

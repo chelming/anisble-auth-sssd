@@ -1,0 +1,33 @@
+---
+- name: Install SSSD and related
+  yum: pkg={{ item }} state=present
+  with_items:
+    - adcli
+    - authconfig
+    - sssd
+    - sssd-client
+    - sssd-libwbclient
+    - oddjob
+    - oddjob-mkhomedir
+
+- name: Copy over working sssd.conf
+  template: src=sssd.conf.j2 dest=/etc/sssd/sssd.conf
+  notify: restart sssd
+
+- name: Ensure SSSD is started and enabled on boot
+  service: name=sssd state=started enabled=yes
+
+- name: Check if authconfig did a previous run
+  command: "/bin/egrep '^auth.*sufficient.*pam_sss.so' /etc/pam.d/system-auth"
+  register: authconfig_run
+  failed_when: authconfig_run.rc != 0
+  changed_when: false
+  ignore_errors: true
+
+- name: Run authconfig
+  shell: /usr/sbin/authconfig --update --enablesssd --enablesssdauth --enablemkhomedir --nostart
+  when: authconfig_run|failed
+
+- name: Ensure oddjobd for mkhomedir is started and enabled on boot
+  service: name=oddjobd state=started enabled=yes
+

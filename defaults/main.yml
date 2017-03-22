@@ -1,0 +1,10 @@
+---
+auth_sssd_domain: "ad.contoso.com"
+auth_sssd_bind_path: "/computers"
+ad_gpo_access_control: "permissive"
+#ad_gpo_access_control: "enforcing"
+
+# please encrypt these with ansible-vault:
+#auth_sssd_user: "admin-user"
+#auth_sssd_password: "pa$$word"
+

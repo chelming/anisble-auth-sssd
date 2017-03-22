@@ -1,0 +1,34 @@
+{{ ansible_managed | comment }}
+
+[logging]
+default = FILE:/var/log/krb5libs.log
+kdc = FILE:/var/log/krb5kdc.log
+admin_server = FILE:/var/log/kadmind.log
+
+[libdefaults]
+default_realm = {{ auth_sssd_domain|upper }}
+dns_lookup_realm = true
+dns_lookup_kdc = true
+ticket_lifetime = 24h
+renew_lifetime = 7d
+forwardable = true
+rdns = True
+
+[realms]
+CONTOSO.COM = {
+    kdc = KERBEROS-1.CONTOSO.COM
+    kdc = KERBEROS-2.CONTOSO.COM
+    admin_server = KERBEROS.CONTOSO.COM
+    default_domain = CONTOSO.COM
+}
+AD.CONTOSO.COM = {
+    kdc = KERBEROS-1.AD.CONTOSO.COM
+    kdc = KERBEROS-2.AD.CONTOSO.COM
+    kdc = KERBEROS-3.AD.CONTOSO.COM
+}
+
+[domain_realm]
+contoso.com = CONTOSO.COM
+.contoso.com = CONTOSO.COM
+ad.contoso.com = AD.CONTOSO.COM
+.ad.contoso.com = AD.CONTOSO.COM

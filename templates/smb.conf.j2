@@ -1,0 +1,7 @@
+{{ ansible_managed | comment }}
+
+[global]
+workgroup = {{ auth_sssd_domain.split('.')[0]|upper }}
+realm = {{ auth_sssd_domain|upper }}
+kerberos method = system keytab
+security = ads

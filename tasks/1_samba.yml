@@ -1,0 +1,20 @@
+---
+- name: Install Samba
+  yum: name={{ item }} state=present
+  with_items:
+    - samba-client
+    - samba-common
+
+- name: Copy smb.conf
+  template: src=smb.conf.j2 dest=/etc/samba/smb.conf
+
+- name: Check if machine is bound
+  shell: /usr/bin/net ads testjoin > /dev/null
+  register: ad_bound
+  failed_when: ad_bound.rc != 0
+  changed_when: false
+  ignore_errors: true
+
+- name: Join {{ auth_sssd_domain }}
+  shell: /usr/bin/net -s /etc/samba/smb.conf -U {{ auth_sssd_user }}%{{ auth_sssd_password }} ads join {{ auth_sssd_domain }} createcomputer="{{ auth_sssd_bind_path }}" osName={{ ansible_distribution }} osVer={{ ansible_distribution_version }} 
+  when: ad_bound|failed

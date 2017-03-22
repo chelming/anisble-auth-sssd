@@ -1,0 +1,14 @@
+---
+- name: Install Kerberos and LDAP clients
+  yum: name={{ item }} state=present
+  with_items:
+    - krb5-workstation
+    - openldap-clients
+
+- name: Configure Kerberos integration with AD
+  template: src=krb5.conf.j2 dest=/etc/krb5.conf
+
+- name: Create keytab
+  shell: /usr/bin/net -s /etc/samba/smb.conf -U {{ auth_sssd_user }}%{{ auth_sssd_password }} ads keytab create
+  args:
+    creates: /etc/krb5.keytab
